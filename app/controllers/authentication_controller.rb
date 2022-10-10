@@ -14,7 +14,7 @@ class AuthenticationController < ApplicationController
         user = User.find_by(email: params[:email])
         if user&.authenticate(params[:password])
             create_user_session(user.id, user.user_type)
-            app_response(status_code: 200, message: "Login successful", body: user)
+            app_response(status_code: 200, message: "Login successful", body: user, serializer: UserSerializer)
         else
             app_response(status_code: 401, message: "Invalid username or password")
         end
@@ -24,7 +24,6 @@ class AuthenticationController < ApplicationController
         delete_user_session
         app_response(status_code: 200, message: "Log out successfully")
     end
-
     
     private
 

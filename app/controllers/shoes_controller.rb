@@ -10,7 +10,7 @@ class ShoesController < ApplicationController
         user = User.find(session[:user_id])
         app_response(status_code: 401, message: "You do not have permission to add a shoe to the store") unless user.valid?
             shoe = user.shoes.create(shoe_params)
-            app_response(status_code: 201, message: "Created successfully", body: shoe)
+            app_response(status_code: 201, message: "Created successfully", body: shoe, serializer: ShoeSerializer)
     end
 
     def list_shoes
@@ -20,14 +20,14 @@ class ShoesController < ApplicationController
 
     def update_shoe
        shoe = Shoe.find(params[:shoe_id])
-       app_response(status_code: 404, message: "That does not seem to be a valid shoe") unless shoe.valid?
+       shoe_not_found() unless shoe.valid?
             shoe.update(shoe_params)
-            app_response(status_code: 200, message: "Updated successfully", body: shoe)
+            app_response(status_code: 200, message: "Updated successfully", body: shoe, serializer: ShoeSerializer)
     end
 
     def delete_shoe
         shoe = Shoe.find(params[:shoe_id])
-        app_response(status_code: 404, message: "That does not seem to be a valid shoe") unless shoe.valid?
+        shoe_not_found() unless shoe.valid?
              shoe.destroy
              app_response(status_code: 200, message: "Deleted successfully")
     end
@@ -36,6 +36,10 @@ class ShoesController < ApplicationController
 
     def shoe_params
         params.permit(:name, :qty, :size, :price, :color, :user_id, :description)
+    end
+
+    def shoe_not_found
+        not_found("That does not seem to be a valid shoe")
     end
 
 end

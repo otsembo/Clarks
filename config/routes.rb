@@ -11,4 +11,13 @@ Rails.application.routes.draw do
   put '/shoes/:shoe_id/update', to: "shoes#update_shoe"
   delete '/shoes/:shoe_id/destroy', to: "shoes#delete_shoe"
 
+  # CART
+  get '/carts', to: "carts#show_cart"
+  post '/carts/add', to: "carts#add_to_cart"
+  delete '/carts/:cart_id/destroy', to: "carts#delete_from_cart"
+  delete '/carts/destroy/all', to: "carts#clear_cart"
+
+  # ORDER
+  post '/orders/create', to: "orders#make_order"
+
 end
