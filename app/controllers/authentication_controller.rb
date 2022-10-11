@@ -24,6 +24,11 @@ class AuthenticationController < ApplicationController
         delete_user_session
         app_response(status_code: 200, message: "Log out successfully")
     end
+
+    # Render 404 page for unmapped routes
+    def render_404
+        not_found
+    end
     
     private
 

@@ -14,20 +14,31 @@ class ShoesController < ApplicationController
     end
 
     def list_shoes
-        shoes = Shoe.all
+        shoes = Shoe.all.map do |shoe|
+            # Serialize individual shoes
+            {
+              id: shoe.id,
+              name: shoe.name,
+              size: shoe.size,
+              price: shoe.price,
+              color: shoe.color,
+              description: shoe.description,
+              seller: ActiveModelSerializers::SerializableResource.new(User.find(shoe.user_id), serializer: UserSerializer)
+            }
+        end
         app_response(status_code: 200, body: shoes)
     end
 
     def update_shoe
        shoe = Shoe.find(params[:shoe_id])
-       shoe_not_found() unless shoe.valid?
+       shoe_not_found unless shoe.valid?
             shoe.update(shoe_params)
             app_response(status_code: 200, message: "Updated successfully", body: shoe, serializer: ShoeSerializer)
     end
 
     def delete_shoe
         shoe = Shoe.find(params[:shoe_id])
-        shoe_not_found() unless shoe.valid?
+        shoe_not_found unless shoe.valid?
              shoe.destroy
              app_response(status_code: 200, message: "Deleted successfully")
     end
@@ -39,7 +50,7 @@ class ShoesController < ApplicationController
     end
 
     def shoe_not_found
-        not_found("That does not seem to be a valid shoe")
+        not_found(message: "That does not seem to be a valid shoe")
     end
 
 end

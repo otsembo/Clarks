@@ -6,9 +6,9 @@ class CartsController < ApplicationController
         shoe = Shoe.find(params[:shoe])
         if shoe
             if shoe.qty < 1
-                out_of_stock()
+                out_of_stock
             else
-                if shoe.qty < params[:qty]
+                if shoe.qty < params[:qty].to_i
                     limited_stock(shoe, params[:qty])
                 else
                     user = User.find(uid)
@@ -18,14 +18,14 @@ class CartsController < ApplicationController
                         qty: params[:qty],
                         active: true
                         )
-                        return app_response(status_code: 201, body: cart)
+                        return app_response(status_code: 201, body: cart, serializer: CartSerializer)
                     else
                         return app_response(message:"You are not authorized!", status_code: 401)
                     end
                 end
             end
             else
-            invalid_shoe()
+                invalid_shoe
         end
     end
 
@@ -42,23 +42,24 @@ class CartsController < ApplicationController
         app_response(message: "You have cleared your cart")
     end
 
+    # Retrieve cart items for the user
     def show_cart
-       cart_items = User.find(uid).carts
-       app_response(body: cart_items) 
+       cart_items = User.find(uid).carts.filter {|item| item.active}.map { |item| ActiveModelSerializers::SerializableResource.new(item, serializer: CartSerializer) }
+       app_response(body: cart_items)
     end
 
     private
 
-    def out_of_stock()
-        return app_response(message: "The item is out of stock at this time")
+    def out_of_stock
+        app_response(message: "The item is out of stock at this time")
     end
 
     def limited_stock(shoe, qty)
-        return app_response(message: "Failed to order #{qty} shoe(s). There are only #{shoe.qty} in stock")
+        app_response(message: "Failed to order #{qty} shoe(s). There are only #{shoe.qty} in stock")
     end
 
     def invalid_shoe
-        not_found("That does not seem to be a valid shoe")
+        not_found(message: "That does not seem to be a valid shoe")
     end
 
 end

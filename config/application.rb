@@ -11,6 +11,8 @@ module Clarks
   class Application < Rails::Application
     # Initialize configuration defaults for originally generated Rails version.
     config.load_defaults 7.0
+    # allow our app to render custom error messages
+    config.exceptions_app = self.routes
 
     config.middleware.use ActionDispatch::Cookies
     config.middleware.use ActionDispatch::Session::CookieStore

@@ -1,4 +1,10 @@
 Rails.application.routes.draw do
+  mount Rswag::Ui::Engine => '/api-docs'
+  mount Rswag::Api::Engine => '/api-docs'
+
+  # GENERAL APPLICATION DATA
+  # ROUTES NOT FOUND
+  match '/404', via: [:delete, :post, :get, :put, :patch], to: "authentication#not_found"
 
   # AUTHENTICATION
   post '/auth/register', to: "authentication#create_account"
@@ -19,5 +25,8 @@ Rails.application.routes.draw do
 
   # ORDER
   post '/orders/create', to: "orders#make_order"
+  get '/orders/list', to: "orders#show_orders"
+  get '/orders/filter/:order_status', to: "orders#filter_orders_with_status" # FILTER USER ORDERS WITH STATUS
+  put '/orders/:order_id/update/:order_status', to: "orders#update_order_status" # UPDATE ORDER STATUS OF A GIVEN ORDER
 
 end
